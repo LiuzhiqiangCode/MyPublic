@@ -9,6 +9,9 @@ app.use(express.urlencoded({extended:true}));
 //中间件调用 这hang代码实现了给req身上加了一个cookie属性 获取cookie数据
 app.use(cookieParser());
 
+//中间件调用 静态资源托管设置
+app.use(express.static("public"));
+
 app.get("/",(req,res)=>{
     console.log(req.query);
     res.send("hello express");
