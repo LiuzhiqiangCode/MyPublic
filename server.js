@@ -10,6 +10,10 @@ const app = express();
 app.set("views","views");
 app.set("view engine","ejs")
 
+//中间件调用 这两行代码实现了给req身上加了一个body属性
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
 //处理各种路由中间件
 app.use("/posts",postRouter);
 app.use("/students",studentRouter);
