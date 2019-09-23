@@ -8,7 +8,7 @@ router.get("/create",(req,res)=>{
 });
 
 //注册路由操作
-router.post("/store",(req,res)=>{
+router.post("/store",async (req,res)=>{
     // console.log(req.body);
     let username = req.body.username;
     let password = req.body.password;
@@ -20,20 +20,30 @@ router.post("/store",(req,res)=>{
     }
 
     //查询
-    UserModel.findOne({email:req.body.email}).then(data=>{
-        if(data){
-            res.send("已经被注册过了哦");
-        }else{
-            let user = new UserModel(req.body);
-            user
-            .save()
-            .then(()=>{
-                res.send("成功");
-            }).catch( error=>{
-                res.send("失败");
-            })
-        }
-    })
+    let data = await UserModel.findOne({email:req.body.email});
+    // console.log(data);
+    if(data){
+        res.send("已经被注册过了");
+    }
+    else{
+        let user = new UserModel(req.body);
+        await user.save();
+        res.send("注册成功");
+    }
+    // .then(data=>{
+    //     if(data){
+    //         res.send("已经被注册过了哦");
+    //     }else{
+    //         let user = new UserModel(req.body);
+    //         user
+    //         .save()
+    //         .then(()=>{
+    //             res.send("成功");
+    //         }).catch( error=>{
+    //             res.send("失败");
+    //         })
+    //     }
+    // })
 })
 
 
