@@ -1,6 +1,8 @@
 const express = require("express");
 const UserModel = require("../models/user");
+const bcryptjs = require("bcryptjs");
 const router = express.Router();
+
 
 //注册页面操作
 router.get("/create",(req,res)=>{
@@ -26,7 +28,11 @@ router.post("/store",async (req,res)=>{
         res.send("已经被注册过了");
     }
     else{
-        let user = new UserModel(req.body);
+        let user = new UserModel({
+            username:req.body.username,
+            email:req.body.email,
+            password:bcryptjs.hashSync(req.body.password)
+        });
         await user.save();
         res.send("注册成功");
     }
@@ -44,6 +50,36 @@ router.post("/store",async (req,res)=>{
     //         })
     //     }
     // })
+});
+
+//登陆页面
+router.get("/login",(req,res)=>{
+    res.render("login");
+});
+//登陆操作
+router.post("/login",async (req,res)=>{
+    let email = req.body.email;
+    let password = req.body.password;
+    // console.log(email,password);
+    if(!email || !password){
+        res.send("参数有误");
+        return;
+    }
+    //数据库中的密码被加密了，所以不要用两个数据去查找
+    let user = await UserModel.findOne({email:email});
+    if(!user){
+        res.send("用户名或密码错误");
+        return;
+    }
+    // console.log(user);
+    //密码校验
+    let isOk = bcryptjs.compareSync(password,user.password);
+    if(!isOk){
+        res.send("用户名或密码错误");
+        return;
+    };
+    res.redirect("/posts");
+
 })
 
 
